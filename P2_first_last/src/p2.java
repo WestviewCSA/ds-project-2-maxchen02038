@@ -14,22 +14,22 @@ public class p2 {
 	            File file = new File(fileName);
 	            Scanner scanner = new Scanner(file);
 	            
-	            // Read and extract first row (metadata)
+	           
 	            int numRows = scanner.nextInt();
 	            int numCols = scanner.nextInt();
 	            int numRooms = scanner.nextInt();
-	            scanner.nextLine(); // Move to next line after integers
+	            scanner.nextLine(); 
 	            
-	            // Read and print the map (excluding the first row)
+	           
 	            int rowIndex = 0;
 	            while (scanner.hasNextLine()) {
 	                String row = scanner.nextLine();
 	                
-	                if (rowIndex < numRows && row.length() >= numCols) { // Ensure valid row length
+	                if (rowIndex < numRows && row.length() >= numCols) { 
 	                    for (int i = 0; i < numCols; i++) {
 	                        System.out.print(row.charAt(i));
 	                    }
-	                    System.out.println(); // Newline for next row
+	                    System.out.println();
 	                    rowIndex++;
 	                }
 	            }
