@@ -1,13 +1,16 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 class Maze {
-    private Tile[][] grid;
+    private List<Tile> tiles;
     private int numRows, numCols;
     private int playerRow, playerCol;
 
     public Maze(String fileName) {
+        tiles = new ArrayList<>();
         loadMaze(fileName);
     }
 
@@ -20,15 +23,13 @@ class Maze {
             numCols = scanner.nextInt();
             scanner.nextLine(); // Move to the next line
 
-            grid = new Tile[numRows][numCols];
-
             for (int row = 0; row < numRows; row++) {
                 String line = scanner.nextLine();
                 for (int col = 0; col < numCols; col++) {
                     char type = line.charAt(col);
-                    grid[row][col] = new Tile(row, col, type);
+                    tiles.add(new Tile(row, col, type));
 
-                    if (type == 'P') { // Set player's initial position
+                    if (type == 'P') { // Player's starting position
                         playerRow = row;
                         playerCol = col;
                     }
@@ -44,9 +45,9 @@ class Maze {
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 if (row == playerRow && col == playerCol) {
-                    System.out.print('P'); // Player position
+                    System.out.print('P'); // Show player position
                 } else {
-                    System.out.print(grid[row][col].getType());
+                    System.out.print(getTile(row, col).getType());
                 }
             }
             System.out.println();
@@ -58,10 +59,10 @@ class Maze {
         int newCol = playerCol;
 
         switch (direction) {
-            case 'W': newRow--; break;
-            case 'S': newRow++; break;
-            case 'A': newCol--; break;
-            case 'D': newCol++; break;
+            case 'W': newRow--; break; // Move up
+            case 'S': newRow++; break; // Move down
+            case 'A': newCol--; break; // Move left
+            case 'D': newCol++; break; // Move right
             default: return false;
         }
 
@@ -74,10 +75,21 @@ class Maze {
     }
 
     private boolean isValidMove(int row, int col) {
-        return row >= 0 && row < numRows && col >= 0 && col < numCols && grid[row][col].getType() != '#';
+        Tile tile = getTile(row, col);
+        return tile != null && tile.getType() != '#';
+    }
+
+    private Tile getTile(int row, int col) {
+        for (Tile tile : tiles) {
+            if (tile.getRow() == row && tile.getCol() == col) {
+                return tile;
+            }
+        }
+        return null;
     }
 
     public boolean hasReachedGoal() {
-        return grid[playerRow][playerCol].getType() == 'G';
+        Tile tile = getTile(playerRow, playerCol);
+        return tile != null && tile.getType() == 'G';
     }
 }
