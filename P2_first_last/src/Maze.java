@@ -1,84 +1,83 @@
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 class Maze {
-    private char[][] grid;
-    private int startX, startY;
-    private int goalX, goalY;
+    private Tile[][] grid;
+    private int numRows, numCols;
+    private int playerRow, playerCol;
 
-    public Maze(String filename) throws IOException {
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
-        }
-        grid = new char[lines.size()][lines.get(0).length()];
-        for (int i = 0; i < lines.size(); i++) {
-            grid[i] = lines.get(i).toCharArray();
-            for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j] == 'W') {
-                    startX = i;
-                    startY = j;
-                } else if (grid[i][j] == '$') {
-                    goalX = i;
-                    goalY = j;
+    public Maze(String fileName) {
+        loadMaze(fileName);
+    }
+
+    private void loadMaze(String fileName) {
+        try {
+            File file = new File(fileName);
+            Scanner scanner = new Scanner(file);
+
+            numRows = scanner.nextInt();
+            numCols = scanner.nextInt();
+            scanner.nextLine(); // Move to the next line
+
+            grid = new Tile[numRows][numCols];
+
+            for (int row = 0; row < numRows; row++) {
+                String line = scanner.nextLine();
+                for (int col = 0; col < numCols; col++) {
+                    char type = line.charAt(col);
+                    grid[row][col] = new Tile(row, col, type);
+
+                    if (type == 'P') { // Set player's initial position
+                        playerRow = row;
+                        playerCol = col;
+                    }
                 }
             }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File not found!");
         }
     }
-    
-    public char[][] getGrid() { return grid; }
-    public int getStartX() { return startX; }
-    public int getStartY() { return startY; }
-    public int getGoalX() { return goalX; }
-    public int getGoalY() { return goalY; }
-}
 
-class Solver {
-    protected Maze maze;
-    protected boolean[][] visited;
-    protected int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-    public Solver(Maze maze) {
-        this.maze = maze;
-        this.visited = new boolean[maze.getGrid().length][maze.getGrid()[0].length];
-    }
-}
-
-class BFSSolver extends Solver {
-    public BFSSolver(Maze maze) { super(maze); }
-
-    public List<int[]> solve() {
-        Queue<int[]> queue = new LinkedList<>();
-        queue.add(new int[]{maze.getStartX(), maze.getStartY()});
-        visited[maze.getStartX()][maze.getStartY()] = true;
-
-        while (!queue.isEmpty()) {
-            int[] curr = queue.poll();
-            int x = curr[0], y = curr[1];
-            if (x == maze.getGoalX() && y == maze.getGoalY()) return reconstructPath();
-            for (int[] d : directions) {
-                int nx = x + d[0], ny = y + d[1];
-                if (isValid(nx, ny)) {
-                    queue.add(new int[]{nx, ny});
-                    visited[nx][ny] = true;
+    public void displayMaze() {
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                if (row == playerRow && col == playerCol) {
+                    System.out.print('P'); // Player position
+                } else {
+                    System.out.print(grid[row][col].getType());
                 }
             }
+            System.out.println();
         }
-        return null;
     }
 
-    private boolean isValid(int x, int y) {
-        return x >= 0 && x < maze.getGrid().length && y >= 0 && y < maze.getGrid()[0].length &&
-               maze.getGrid()[x][y] != '@' && !visited[x][y];
+    public boolean movePlayer(char direction) {
+        int newRow = playerRow;
+        int newCol = playerCol;
+
+        switch (direction) {
+            case 'W': newRow--; break;
+            case 'S': newRow++; break;
+            case 'A': newCol--; break;
+            case 'D': newCol++; break;
+            default: return false;
+        }
+
+        if (isValidMove(newRow, newCol)) {
+            playerRow = newRow;
+            playerCol = newCol;
+            return true;
+        }
+        return false;
     }
 
-    private List<int[]> reconstructPath() {
-        // Path reconstruction logic
-        return new ArrayList<>();
+    private boolean isValidMove(int row, int col) {
+        return row >= 0 && row < numRows && col >= 0 && col < numCols && grid[row][col].getType() != '#';
+    }
+
+    public boolean hasReachedGoal() {
+        return grid[playerRow][playerCol].getType() == 'G';
     }
 }
-
-
