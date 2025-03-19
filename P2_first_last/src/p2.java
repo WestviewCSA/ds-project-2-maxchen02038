@@ -4,23 +4,42 @@ import java.util.Scanner;
 
 public class p2 {
     public static void main(String[] args) {
-        Scanner userInput = new Scanner(System.in);
+        start();
+    }
 
-        System.out.print("Maze: ");
+    
+    public static void start() {
+    	Scanner userInput = new Scanner(System.in);
+
+        System.out.println("Maze: ");
         String fileName = userInput.nextLine();
+
+        System.out.print("Stack or Queue: ");
+
+        String beans = userInput.nextLine();
 
         char[][] maze = readMap(fileName);
 
         if (maze != null) {
-            Maze mazeSolver = new Maze(maze);
-            mazeSolver.findPathStack();
-            mazeSolver.findPathQueue();
-
-            mazeSolver.printMaze();
+        	if(beans.equals("Stack")) {
+        		Maze mazeSolver = new Maze(maze);
+        		mazeSolver.findPathStack();
+        		mazeSolver.printMaze();
+        	} else if (beans.equals("Queue")){
+        		Maze mazeSolver = new Maze(maze);
+                mazeSolver.findPathQueue();
+                mazeSolver.printMaze();
+        	} else {
+               System.out.println("Error: Pick Queue or Stack");
+               System.out.println("idiot");
+               start();
+        	}
         }
 
         userInput.close();
+    	
     }
+    
 
     public static char[][] readMap(String fileName) {
         try {
