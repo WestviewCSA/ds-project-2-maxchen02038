@@ -1,3 +1,6 @@
+/*
+
+
 import java.util.Scanner;
 
 public class MazeSolverApp {
@@ -22,3 +25,6 @@ public class MazeSolverApp {
         scanner.close();
     }
 }
+
+
+*/

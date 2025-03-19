@@ -1,4 +1,6 @@
-public class Map {
+/*
+ * 
+ * public class Map {
 	
 	 char[][] maze;
 	    int rows, cols;
@@ -46,3 +48,6 @@ public class Map {
    
 	
 }
+
+
+*/

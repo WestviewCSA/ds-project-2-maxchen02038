@@ -9,7 +9,7 @@ public class Maze {
     private static final char OPEN = '.';
     private static final char PATH = '+';
     private static final char START = 'W';
-    private static final char END = '$';
+    private static final char COIN = '$';
 
     public Maze(char[][] maze) {
         this.maze = maze;
@@ -43,7 +43,7 @@ public class Maze {
             int[] current = queue.poll();
             int x = current[0], y = current[1];
 
-            if (maze[x][y] == END) {
+            if (maze[x][y] == COIN) {
                 markPath(parent, x, y);
                 return;
             }
@@ -53,7 +53,7 @@ public class Maze {
                 if (isValidMove(newX, newY, visited)) {
                     queue.add(new int[]{newX, newY});
                     visited[newX][newY] = true;
-                    parent[newX][newY] = new int[]{x, y}; // Store parent
+                    parent[newX][newY] = new int[]{x, y};
                 }
             }
         }
@@ -65,7 +65,7 @@ public class Maze {
             int px = parent[x][y][0];
             int py = parent[x][y][1];
 
-            if (maze[x][y] != END) {
+            if (maze[x][y] != COIN) {
                 maze[x][y] = PATH;
             }
 
