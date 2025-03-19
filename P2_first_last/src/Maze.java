@@ -1,95 +1,88 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.LinkedList;
+import java.util.Queue;
 
-class Maze {
-    private List<Tile> tiles;
-    private int numRows, numCols;
-    private int playerRow, playerCol;
+public class Maze {
+    private char[][] maze;
+    private int rows, cols;
+    private int startX, startY;
+    private static final char WALL = '@';
+    private static final char OPEN = '.';
+    private static final char PATH = '+';
+    private static final char START = 'W';
+    private static final char END = '$';
 
-    public Maze(String fileName) {
-        tiles = new ArrayList<>();
-        loadMaze(fileName);
+    public Maze(char[][] maze) {
+        this.maze = maze;
+        this.rows = maze.length;
+        this.cols = maze[0].length;
+        findStart();
     }
 
-    private void loadMaze(String fileName) {
-        try {
-            File file = new File(fileName);
-            Scanner scanner = new Scanner(file);
-
-            numRows = scanner.nextInt();
-            numCols = scanner.nextInt();
-            scanner.nextLine(); // Move to the next line
-
-            for (int row = 0; row < numRows; row++) {
-                String line = scanner.nextLine();
-                for (int col = 0; col < numCols; col++) {
-                    char type = line.charAt(col);
-                    tiles.add(new Tile(row, col, type));
-
-                    if (type == 'P') { // Player's starting position
-                        playerRow = row;
-                        playerCol = col;
-                    }
+    private void findStart() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (maze[i][j] == START) {
+                    startX = i;
+                    startY = j;
+                    return;
                 }
             }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: File not found!");
         }
     }
 
-    public void displayMaze() {
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numCols; col++) {
-                if (row == playerRow && col == playerCol) {
-                    System.out.print('P'); // Show player position
-                } else {
-                    System.out.print(getTile(row, col).getType());
+    public void findPath() {
+        boolean[][] visited = new boolean[rows][cols];
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        Queue<int[]> queue = new LinkedList<>();
+        int[][][] parent = new int[rows][cols][2]; 
+
+        queue.add(new int[]{startX, startY});
+        visited[startX][startY] = true;
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int x = current[0], y = current[1];
+
+            if (maze[x][y] == END) {
+                markPath(parent, x, y);
+                return;
+            }
+
+            for (int[] dir : directions) {
+                int newX = x + dir[0], newY = y + dir[1];
+                if (isValidMove(newX, newY, visited)) {
+                    queue.add(new int[]{newX, newY});
+                    visited[newX][newY] = true;
+                    parent[newX][newY] = new int[]{x, y}; // Store parent
                 }
             }
-            System.out.println();
         }
     }
 
-    public boolean movePlayer(char direction) {
-        int newRow = playerRow;
-        int newCol = playerCol;
+    private void markPath(int[][][] parent, int endX, int endY) {
+        int x = endX, y = endY;
+        while (maze[x][y] != START) {
+            int px = parent[x][y][0];
+            int py = parent[x][y][1];
 
-        switch (direction) {
-            case 'W': newRow--; break; // Move up
-            case 'S': newRow++; break; // Move down
-            case 'A': newCol--; break; // Move left
-            case 'D': newCol++; break; // Move right
-            default: return false;
-        }
-
-        if (isValidMove(newRow, newCol)) {
-            playerRow = newRow;
-            playerCol = newCol;
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isValidMove(int row, int col) {
-        Tile tile = getTile(row, col);
-        return tile != null && tile.getType() != '#';
-    }
-
-    private Tile getTile(int row, int col) {
-        for (Tile tile : tiles) {
-            if (tile.getRow() == row && tile.getCol() == col) {
-                return tile;
+            if (maze[x][y] != END) {
+                maze[x][y] = PATH;
             }
+
+            x = px;
+            y = py;
         }
-        return null;
     }
 
-    public boolean hasReachedGoal() {
-        Tile tile = getTile(playerRow, playerCol);
-        return tile != null && tile.getType() == 'G';
+    private boolean isValidMove(int x, int y, boolean[][] visited) {
+        return x >= 0 && x < rows && y >= 0 && y < cols && maze[x][y] != WALL && !visited[x][y];
+    }
+
+    public void printMaze() {
+        for (char[] row : maze) {
+            System.out.println(new String(row));
+        }
     }
 }
+
+
