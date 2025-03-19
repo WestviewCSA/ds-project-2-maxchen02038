@@ -13,7 +13,9 @@ public class p2 {
 
         if (maze != null) {
             Maze mazeSolver = new Maze(maze);
-            mazeSolver.findPath();
+            mazeSolver.findPathStack();
+            mazeSolver.findPathQueue();
+
             mazeSolver.printMaze();
         }
 

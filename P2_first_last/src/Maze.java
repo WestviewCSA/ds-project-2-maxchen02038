@@ -1,8 +1,10 @@
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
+
 
 public class Maze {
-    private char[][] maze;
+	private char[][] maze;
     private int rows, cols;
     private int startX, startY;
     private static final char WALL = '@';
@@ -29,8 +31,9 @@ public class Maze {
             }
         }
     }
-
-    public void findPath() {
+    
+    //queue
+    public void findPathQueue() {
         boolean[][] visited = new boolean[rows][cols];
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
         Queue<int[]> queue = new LinkedList<>();
@@ -52,6 +55,42 @@ public class Maze {
                 int newX = x + dir[0], newY = y + dir[1];
                 if (isValidMove(newX, newY, visited)) {
                     queue.add(new int[]{newX, newY});
+                    visited[newX][newY] = true;
+                    parent[newX][newY] = new int[]{x, y};
+                }
+            }
+        }
+    }
+
+    
+    
+    
+    
+    
+    
+    //stack
+    public void findPathStack() {
+        boolean[][] visited = new boolean[rows][cols];
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        Stack<int[]> stack = new Stack<>();
+        int[][][] parent = new int[rows][cols][2];
+
+        stack.push(new int[]{startX, startY});
+        visited[startX][startY] = true;
+
+        while (!stack.isEmpty()) {
+            int[] current = stack.pop();
+            int x = current[0], y = current[1];
+
+            if (maze[x][y] == COIN) {
+                markPath(parent, x, y);
+                return;
+            }
+
+            for (int[] dir : directions) {
+                int newX = x + dir[0], newY = y + dir[1];
+                if (isValidMove(newX, newY, visited)) {
+                    stack.push(new int[]{newX, newY});
                     visited[newX][newY] = true;
                     parent[newX][newY] = new int[]{x, y};
                 }
