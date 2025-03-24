@@ -65,7 +65,7 @@ public class p2 {
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            System.out.println("File does not work: " + e.getMessage());
         }
         return null;
     }
