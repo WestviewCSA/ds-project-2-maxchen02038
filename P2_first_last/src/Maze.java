@@ -2,8 +2,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
+
 public class Maze {
-    private char[][] maze;
+	private char[][] maze;
     private int rows, cols;
     private int startX, startY;
     private static final char WALL = '@';
@@ -61,6 +62,12 @@ public class Maze {
         }
     }
 
+    
+    
+    
+    
+    
+    
     //stack
     public void findPathStack() {
         boolean[][] visited = new boolean[rows][cols];
@@ -112,10 +119,9 @@ public class Maze {
 
     public void printMaze() {
         for (char[] row : maze) {
-            for (char cell : row) {
-                System.out.print(cell + " ");
-            }
-            System.out.println();
+            System.out.println(new String(row));
         }
     }
 }
+
+
