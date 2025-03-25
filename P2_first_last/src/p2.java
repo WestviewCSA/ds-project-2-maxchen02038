@@ -64,8 +64,10 @@ public class p2 {
             return maze;
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
+            System.out.println("The file doesn't work idiot");
         } catch (Exception e) {
             System.out.println("File does not work: " + e.getMessage());
+            System.out.println("The file doesn't work idiot");
         }
         return null;
     }
